@@ -120,9 +120,9 @@ const GRAVITY = -0.045;
 const JUMP_FORCE = 0.75;
 const SLIDE_DURATION = 40;
 const PLAYER_BASE_Y = 0.8;
-const BASE_SPEED = 0.35;
+const BASE_SPEED = 0.42;
 const MAX_SPEED = 1.2;
-const SPEED_INCREMENT = 0.00008;
+const SPEED_INCREMENT = 0.00012;
 
 let scene, camera, renderer, clock;
 let player, playerGroup;
@@ -423,6 +423,10 @@ function createInitialSegments(){
     const seg = createSegment(-i * SEGMENT_LENGTH);
     segments.push({ mesh: seg, z: -i * SEGMENT_LENGTH });
   }
+  // Spawn obstacles on far segments (skip first 2 for safe start)
+  for(let i = 3; i < NUM_SEGMENTS; i++){
+    spawnObstacles(-i * SEGMENT_LENGTH);
+  }
 }
 
 // ============ OBSTACLES ============
@@ -686,9 +690,9 @@ function updateGame(dt){
   gameSpeed = Math.min(MAX_SPEED, gameSpeed + SPEED_INCREMENT);
   distance += gameSpeed;
 
-  // Score
-  score += Math.floor(gameSpeed * 2);
-  if(x2Timer > 0) score += Math.floor(gameSpeed * 2);
+  // Score (accumulate as float, display as int)
+  score += gameSpeed * 2;
+  if(x2Timer > 0) score += gameSpeed * 2;
   document.getElementById('score-val').textContent = Math.floor(score);
 
   // Move segments
